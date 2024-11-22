@@ -36,6 +36,9 @@ timerEl.style.color = 'white'
 timerEl.style.zIndex = '1000'
 document.body.appendChild(timerEl)
 
+// Add a variable to track if the game is over
+let isGameOver = false;
+
 // Listen for timer updates from the server
 socket.on('updateTimer', (remainingTime) => {
   timerEl.textContent = `${remainingTime}s`
@@ -49,9 +52,30 @@ socket.on('updateTimer', (remainingTime) => {
 
   // Hide the timer when the game is over
   if (remainingTime <= 0) {
-    timerEl.textContent = 'Game Over!'
+    timerEl.textContent = 'Game Over!';
+    isGameOver = true;
+    showRestartButton();    
   }
-})
+});
+
+function showRestartButton() {
+  const restartButton = document.createElement('button');
+  restartButton.textContent = 'Back to Start';
+  restartButton.style.position = 'absolute';
+  restartButton.style.top = '50%';
+  restartButton.style.left = '50%';
+  restartButton.style.transform = 'translate(-50%, -50%)';
+  restartButton.style.padding = '10px 20px';
+  restartButton.style.fontSize = '16px';
+  restartButton.style.cursor = 'pointer';
+  restartButton.style.zIndex = '1000';
+
+  restartButton.addEventListener('click', () => {
+    location.reload(); // Reload the page to restart the game
+  });
+
+  document.body.appendChild(restartButton);
+}
 
 socket.on('updateProjectiles', (backEndProjectiles) => {
   for (const id in backEndProjectiles) {
@@ -136,27 +160,29 @@ socket.on('updatePlayers', (backEndPlayers) => {
 
 let animationId
 function animate() {
-  animationId = requestAnimationFrame(animate)
-  c.fillStyle = 'rgba(0, 0, 0, 0.1)'
-  c.clearRect(0, 0, canvas.width, canvas.height)
+  if (isGameOver) return; // Stop the animation if the game is over
+
+  animationId = requestAnimationFrame(animate);
+  c.fillStyle = 'rgba(0, 0, 0, 0.1)';
+  c.clearRect(0, 0, canvas.width, canvas.height);
 
   for (const id in frontEndPlayers) {
-    const frontEndPlayer = frontEndPlayers[id]
+    const frontEndPlayer = frontEndPlayers[id];
 
     // linear interpolation
     if (frontEndPlayer.target) {
       frontEndPlayers[id].x +=
-        (frontEndPlayers[id].target.x - frontEndPlayers[id].x) * 0.5
+        (frontEndPlayers[id].target.x - frontEndPlayers[id].x) * 0.5;
       frontEndPlayers[id].y +=
-        (frontEndPlayers[id].target.y - frontEndPlayers[id].y) * 0.5
+        (frontEndPlayers[id].target.y - frontEndPlayers[id].y) * 0.5;
     }
 
-    frontEndPlayer.draw()
+    frontEndPlayer.draw();
   }
 
   for (const id in frontEndProjectiles) {
-    const frontEndProjectile = frontEndProjectiles[id]
-    frontEndProjectile.draw()
+    const frontEndProjectile = frontEndProjectiles[id];
+    frontEndProjectile.draw();
   }
 }
 
