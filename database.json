@@ -1,0 +1,50 @@
+{
+  "123": {
+    "password": "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3",
+    "sessionToken": "a261d554f6b6f878f3233489f3df740f810d19c2dc7e736db7b4a90524e3ed80"
+  },
+  "121211": {
+    "password": "683bca857c7ad55fe62712fbe5097383f9b6970499f4251ac8889ab9973877bd",
+    "sessionToken": "4a167bd1eefd976b77b2b622fe0ade6beab5e186d5dffb24d142cef58935da1e"
+  },
+  "121212": {
+    "password": "3ea87a56da3844b420ec2925ae922bc731ec16a4fc44dcbeafdad49b0e61d39c",
+    "sessionToken": "f9f55386d8398811e97c51f793c56972eae999be4370a388ea40ea1c0977f03c"
+  },
+  "test": {
+    "password": "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08",
+    "sessionToken": "d9938e6c5fb419fb1663e3eca9709649a9ab1ec442ab418d32e317c13cfa75e6"
+  },
+  "": {
+    "password": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "sessionToken": "ec61d6a936fe1b037dd8863f3758419fe2a7d4c0c0ec7939bb1fc7c7b600a769"
+  },
+  "abc": {
+    "password": "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3",
+    "sessionToken": "0633da4fa6fcf01ccc787dbae6768cad1059244e394c861b9905dca5250de255"
+  },
+  "phone": {
+    "password": "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3",
+    "sessionToken": "6b60bc85dc5f7d589c7a13627d0c6622a9e13f769a835837b09ed313a1a65f25"
+  },
+  "a": {
+    "password": "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4",
+    "sessionToken": "7a10f7ecc36b698c4ecd3a28674afeb0feec5193511c44b5dbfb5a063ddd06f6"
+  },
+  "b": {
+    "password": "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4",
+    "sessionToken": "5cd69e83995088444988079c996575f9268e453c4c58a9fce62a34be8e531c76"
+  },
+  "ball": {
+    "password": "78c72f67941a420cd4e5ee9fdabcaeaba6d72f16160915085f9802220fd83799",
+    "sessionToken": "3d3e896c36974f65f8c131729a8f2dbf4246324c562f93cdfe6a0a8d915cec06"
+  },
+  "bosco": {
+    "password": "0ffe1abd1a08215353c233d6e009613e95eec4253832a761af28ff37ac5a150c",
+    "sessionToken": "de08a207189fa839b92a314a95e2abe5c93dacbacd220710353163404aedced8"
+  },
+  "BALLJAI": {
+    "password": "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3",
+    "sessionToken": "4fec42e884f426b6bad77000f14623fe9d6bb01fe06c515a5285ff32e75b206d"
+  }
+}
