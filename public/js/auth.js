@@ -29,6 +29,13 @@ class AuthManager {
     })
   }
 
+  stopBGM() {
+    if (this.bgm) {
+      this.bgm.pause();
+      this.bgm.currentTime = 0;
+    }
+  }
+
   initializeEventListeners() {
     // Toggle forms
     document
@@ -45,6 +52,10 @@ class AuthManager {
     document
       .getElementById('signupForm')
       .addEventListener('submit', (e) => this.handleSignup(e))
+
+    // Listen for game over event
+    document
+      .addEventListener('gameOver', () => this.stopBGM())
 
     // Add start button listener
     this.startButton.addEventListener('click', () => {

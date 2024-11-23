@@ -52,6 +52,7 @@ socket.on('updateTimer', (remainingTime) => {
     timerEl.textContent = 'Game Over !';
     isGameOver = true;
     showRestartButton();
+    document.dispatchEvent(new Event('gameOver'));
   }
 });
 
