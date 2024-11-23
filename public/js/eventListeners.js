@@ -6,6 +6,11 @@ addEventListener('click', (event) => {
     return
   }
 
+  // Stop shooting when Game Over
+  if (isGameOver) {
+    return
+  }
+
   // Early return if player is during isRespawning
   console.log(frontEndPlayers[socket.id].isRespawning)
   if (frontEndPlayers[socket.id].isRespawning != false) {
