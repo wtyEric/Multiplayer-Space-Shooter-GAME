@@ -1,81 +1,70 @@
-const canvas = document.querySelector('canvas')
-const c = canvas.getContext('2d')
+const canvas = document.querySelector('canvas');
+const c = canvas.getContext('2d');
 
-const socket = io()
+const socket = io();
 
-const scoreEl = document.querySelector('#scoreEl')
+const scoreEl = document.querySelector('#scoreEl');
 
-/* const devicePixelRatio = Math.round((window.devicePixelRatio || 1) * 100) / 100 */
-const devicePixelRatio = 1
-canvas.width = 1024 * devicePixelRatio
-canvas.height = 576 * devicePixelRatio
+const devicePixelRatio = 1;
+canvas.width = 1024 * devicePixelRatio;
+canvas.height = 576 * devicePixelRatio;
 
-c.scale(devicePixelRatio, devicePixelRatio)
+c.scale(devicePixelRatio, devicePixelRatio);
 
-const x = canvas.width
-const y = canvas.height
+const x = canvas.width;
+const y = canvas.height;
 
-const frontEndPlayers = {}
-const frontEndProjectiles = {}
+const frontEndPlayers = {};
+const frontEndProjectiles = {};
 
 // Track speed boost state
 const gameState = {
   playerSpeedBoosts: {}
-}
+};
 
-// Create a timer element
-const timerEl = document.createElement('div')
-timerEl.id = 'gameTimer'
-timerEl.style.position = 'absolute'
-timerEl.style.top = '10px'
-timerEl.style.left = '50%'
-timerEl.style.transform = 'translateX(-50%)'
-timerEl.style.fontFamily = 'sans-serif'
-timerEl.style.fontSize = '24px'
-timerEl.style.color = 'white'
-timerEl.style.zIndex = '1000'
-document.body.appendChild(timerEl)
+// Use the existing timer element
+const timerEl = document.getElementById('gameTimer');
+timerEl.style.position = 'absolute';
+timerEl.style.top = '25%'; // Use percentage for top position
+timerEl.style.left = '50%';
+timerEl.style.transform = 'translateX(-50%)';
+timerEl.style.fontFamily = 'sans-serif';
+timerEl.style.fontSize = '2rem'; // Use relative units for responsive font size
+timerEl.style.color = 'white';
+timerEl.style.zIndex = '1000';
 
 // Add a variable to track if the game is over
 let isGameOver = false;
 
 // Listen for timer updates from the server
 socket.on('updateTimer', (remainingTime) => {
-  timerEl.textContent = `${remainingTime}s`
+  timerEl.textContent = `${remainingTime}s`;
 
   // Change color to red in the last 10 seconds
   if (remainingTime <= 10) {
-    timerEl.style.color = 'red'
+    timerEl.style.color = 'red';
   } else {
-    timerEl.style.color = 'white'
+    timerEl.style.color = 'white';
   }
 
   // Hide the timer when the game is over
   if (remainingTime <= 0) {
-    timerEl.textContent = 'Game Over!';
+    timerEl.textContent = 'Game Over !';
     isGameOver = true;
-    showRestartButton();    
+    showRestartButton();
   }
 });
 
+const restartButton = document.getElementById('restartButton');
 function showRestartButton() {
-  const restartButton = document.createElement('button');
-  restartButton.textContent = 'Back to Start';
-  restartButton.style.position = 'absolute';
-  restartButton.style.top = '50%';
-  restartButton.style.left = '50%';
-  restartButton.style.transform = 'translate(-50%, -50%)';
-  restartButton.style.padding = '10px 20px';
-  restartButton.style.fontSize = '16px';
-  restartButton.style.cursor = 'pointer';
-  restartButton.style.zIndex = '1000';
-
+  restartButton.style.display = 'block'; // Show the restart button
   restartButton.addEventListener('click', () => {
     location.reload(); // Reload the page to restart the game
   });
-
-  document.body.appendChild(restartButton);
 }
+
+// Ensure the restart button is hidden initially
+restartButton.style.display = 'none';
 
 socket.on('updateProjectiles', (backEndProjectiles) => {
   for (const id in backEndProjectiles) {

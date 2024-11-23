@@ -11,8 +11,6 @@
     <div class="game-container">
       <!-- Game Instructions -->
       <div class="instructions">
-        <!-- <div class="timer" id="timer">Waiting for players...</div>
-        <div class="score" id="score">Score: 0</div> -->
         <div class="rules">
           <h3>Control:</h3>
           <ul>
@@ -41,7 +39,7 @@
       </div>
 
       <canvas></canvas>
-      <div id="countdownTimer" class="countdown-timer"></div>
+      <div id="gameTimer" class="countdown-timer"></div> <!-- Add the timer here -->
 
       <!-- Auth Forms -->
       <div id="loginContainer" class="auth-container">
@@ -105,6 +103,9 @@
       <button id="startButton" class="btn btn-primary" style="display: none">
         Start Game
       </button>
+      <button id="restartButton" class="btn btn-primary" style="display: none">
+        Restart Game
+      </button>
     </div>
 
     <!-- Scripts -->
@@ -121,3 +122,4 @@
     <script src="./js/GameCountdown.js"></script>
   </body>
 </html>
+
