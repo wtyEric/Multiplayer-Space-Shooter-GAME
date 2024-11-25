@@ -19,6 +19,9 @@ class GameServer {
     this.remainingTime = 15 // Game duration in seconds
     this.gameInitialized = false // Track whether the game has started
 
+    this.players = {} // Store player data
+    this.gameStarted = false // Track if the game has started
+
     this.setupMiddleware()
     this.setupRoutes()
     this.setupSocketHandlers()
@@ -99,20 +102,45 @@ class GameServer {
       socket.emit('updateTimer', this.remainingTime)
 
       socket.on('shoot', ({ x, y, angle }) => {
-        gameService.createProjectile(socket.id, x, y, angle)
-      })
+        if (this.gameStarted) { // Allow shooting only if the game has started
+          gameService.createProjectile(socket.id, x, y, angle)
+        }
+      })      
 
       socket.on('initGame', ({ username, width, height }) => {
         console.log(`Game initialized for ${username}`)
         gameService.initializePlayer(socket.id, username, width, height)
 
+        // Initialize player data
+        this.players[socket.id] = {
+        id: socket.id,
+        username: username,
+        x: Math.random() * width,
+        y: Math.random() * height,
+        score: 0,
+        color: '#' + Math.floor(Math.random() * 16777215).toString(16),
+        isRespawning: false,
+        shipType: 1 // Default ship type
+        }
+
         // Broadcast to all clients including sender
         this.io.emit('updatePlayers', gameService.getGameState().players)
+      })
 
-        // Start the timer if it's not already running
-        if (!this.gameInitialized) {
+      socket.on('startGame', () => {
+        if (!this.gameStarted) {
+          this.gameStarted = true
+          this.io.emit('hideStartButton')
           this.startGameTimer()
-          this.gameInitialized = true
+        }
+      })
+      
+      socket.on('restartGame', () => {
+        if (!this.gameStarted) {
+          this.remainingTime = 15 // Reset the timer for the next game
+          this.startGameTimer()
+          this.gameStarted = true
+          this.io.emit('gameRestarted')
         }
       })
 
@@ -122,6 +150,7 @@ class GameServer {
 
       socket.on('disconnect', (reason) => {
         console.log(`Player disconnected: ${socket.id}, reason: ${reason}`)
+        delete this.players[socket.id]
         gameService.removePlayer(socket.id)
         this.io.emit('updatePlayers', gameService.getGameState().players)
       })
@@ -143,6 +172,9 @@ class GameServer {
   }
 
   startGameTimer() {
+    if (this.timer) {
+      clearInterval(this.timer)
+    }
     this.timer = setInterval(() => {
       if (this.remainingTime > 0) {
         this.remainingTime -= 1
@@ -156,6 +188,7 @@ class GameServer {
         this.io.emit('updateTimer', 0)
         this.gameInitialized = false // Allow the game to reinitialize
         this.remainingTime = 15 // Reset the timer for the next game
+        this.gameStarted = false // Reset game state
       }
     }, 1000) // Update every second
   }

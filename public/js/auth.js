@@ -1,3 +1,5 @@
+// auth.js
+
 class AuthManager {
   constructor() {
     // Add debug logging
@@ -31,8 +33,8 @@ class AuthManager {
 
   stopBGM() {
     if (this.bgm) {
-      this.bgm.pause();
-      this.bgm.currentTime = 0;
+      this.bgm.pause()
+      this.bgm.currentTime = 0
     }
   }
 
@@ -54,22 +56,23 @@ class AuthManager {
       .addEventListener('submit', (e) => this.handleSignup(e))
 
     // Listen for game over event
-    document
-      .addEventListener('gameOver', () => this.stopBGM())
-
-    // Add start button listener
-    this.startButton.addEventListener('click', () => {
-      this.bgm.play()
-      this.startButton.style.display = 'none'
-      socket.emit('initGame', {
-        username: this.currentUsername,
-        width: canvas.width,
-        height: canvas.height
-      })
-    })
+    document.addEventListener('gameOver', () => this.stopBGM())
 
     // Check session on load
     this.checkSession()
+
+    // Add start button listener
+    this.startButton.addEventListener('click', () => {
+      // Do not hide the start button here
+      // this.startButton.style.display = 'none' // Remove this line
+      socket.emit('startGame') // Emit 'startGame' event to server
+    })
+
+    // Listen for 'hideStartButton' event from server
+    socket.on('hideStartButton', () => {
+      this.startButton.style.display = 'none'
+      this.bgm.play() // Play background music when game starts
+    })
   }
 
   async handleLogin(e) {
@@ -88,6 +91,13 @@ class AuthManager {
         this.loginContainer.style.display = 'none'
         this.startButton.style.display = 'block'
         this.currentUsername = username
+
+        // Emit 'initGame' to server after successful login
+        socket.emit('initGame', {
+          username: this.currentUsername,
+          width: canvas.width,
+          height: canvas.height
+        })
       } else {
         const data = await response.json()
         alert(data.message || 'Invalid credentials')
@@ -107,6 +117,13 @@ class AuthManager {
         this.loginContainer.style.display = 'none'
         this.startButton.style.display = 'block'
         this.currentUsername = data.username
+
+        // Emit 'initGame' to server if session is valid
+        socket.emit('initGame', {
+          username: this.currentUsername,
+          width: canvas.width,
+          height: canvas.height
+        })
       }
     } catch (error) {
       console.error('Session check error:', error)
