@@ -35,11 +35,15 @@ timerEl.style.zIndex = '1000';
 
 // Add a variable to track if the game is over
 let isGameOver = false;
-
+let eiofwhweiofhfweiho = false;
 // Listen for timer updates from the server
 socket.on('updateTimer', (remainingTime) => {
   timerEl.textContent = `${remainingTime}s`;
-
+  if (remainingTime >= 60) {
+    eiofwhweiofhfweiho = true;
+  } else {
+    eiofwhweiofhfweiho = false;
+  }
   // Change color to red in the last 10 seconds
   if (remainingTime <= 10) {
     timerEl.style.color = 'red';

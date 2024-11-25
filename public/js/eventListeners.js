@@ -5,9 +5,9 @@ addEventListener('click', (event) => {
   if (!socket?.id || !frontEndPlayers?.[socket.id]) {
     return
   }
-
+  
   // Stop shooting when Game Over
-  if (isGameOver) {
+  if (isGameOver || eiofwhweiofhfweiho) {
     return
   }
 
