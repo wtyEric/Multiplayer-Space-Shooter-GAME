@@ -140,10 +140,9 @@ class GameServer {
         if (!this.gameStarted) {
           this.remainingTime = 60 // Reset the timer for the next game
           this.startGameTimer()
-          this.gameInitialized = false // Allow the game to reinitialize
+          this.gameInitialized = true // Allow the game to reinitialize
           this.remainingTime = 15 // Reset the timer for the next game
-          this.gameStarted = false // Reset game state
-          this.gameStarted = true
+          this.gameStarted = true // Reset game state
           this.io.emit('hideStartButton')
           this.io.emit('gameRestarted')
         }

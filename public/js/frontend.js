@@ -40,6 +40,7 @@ let eiofwhweiofhfweiho = false
 socket.on('updateTimer', (remainingTime) => {
   timerEl.textContent = `${remainingTime}s`
   if (remainingTime >= 15) {
+    isGameOver = false
     eiofwhweiofhfweiho = true
   } else {
     eiofwhweiofhfweiho = false
