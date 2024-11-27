@@ -1,9 +1,12 @@
 const canvas = document.querySelector('canvas')
 const c = canvas.getContext('2d')
+//define the game is running or not
+let gameisrunning = false
 
 const socket = io()
 
 const scoreEl = document.querySelector('#scoreEl')
+const startButton = document.getElementById('startButton')
 
 const devicePixelRatio = 1
 canvas.width = 1024 * devicePixelRatio
@@ -51,9 +54,11 @@ socket.on('updateTimer', (remainingTime) => {
   } else {
     timerEl.style.color = 'white'
   }
+  gameisrunning = true
 
   // Hide the timer when the game is over
   if (remainingTime <= 0) {
+    gameisrunning = false
     timerEl.textContent = 'Game Over !'
     isGameOver = true
     showRestartButton()
@@ -63,14 +68,24 @@ socket.on('updateTimer', (remainingTime) => {
 
 const restartButton = document.getElementById('restartButton')
 function showRestartButton() {
+  gameisrunning = false
   restartButton.style.display = 'block' // Show the restart button
   restartButton.addEventListener('click', () => {
+    socket.emit('restartGame')
     location.reload() // Reload the page to restart the game
   })
 }
 
 // Ensure the restart button is hidden initially
 restartButton.style.display = 'none'
+
+socket.on('gameRestarted', () => {
+  gameisrunning = true
+  startButton.style.display = 'none'
+  socket.emit('hideStartButton')
+  startButton.style.display = 'none'
+  location.reload()
+})
 
 socket.on('updateProjectiles', (backEndProjectiles) => {
   for (const id in backEndProjectiles) {
@@ -99,6 +114,10 @@ socket.on('updateProjectiles', (backEndProjectiles) => {
 })
 
 socket.on('updatePlayers', (backEndPlayers) => {
+  console.log('gameover' + isGameOver)
+  if (gameisrunning == false) {
+    startButton.style.display = 'none'
+  }
   for (const id in backEndPlayers) {
     const backEndPlayer = backEndPlayers[id]
 
@@ -155,7 +174,6 @@ socket.on('updatePlayers', (backEndPlayers) => {
 
 let animationId
 function animate() {
-  console.log('isGameOver = ' + isGameOver)
   if (isGameOver) return // Stop the animation if the game is over
 
   animationId = requestAnimationFrame(animate)

@@ -76,10 +76,8 @@ class AuthManager {
       isGameOver = false
       eiofwhweiofhfweiho = true
       this.bgm.play() // Play background music when game starts
-    })
-
-    socket.on('gameRestarted', () => {
-      location.reload()
+      this.startButton = document.getElementById('startButton')
+      this.startButton.style.display = 'none'
     })
   }
 

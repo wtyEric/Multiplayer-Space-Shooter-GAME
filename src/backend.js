@@ -137,14 +137,14 @@ class GameServer {
       })
 
       socket.on('restartGame', () => {
+        this.io.emit('gameRestarted')
         if (!this.gameStarted) {
-          this.io.emit('gameRestarted')
-          this.remainingTime = 60 // Reset the timer for the next game
+          this.remainingTime = 15 // Reset the timer for the next game
           this.startGameTimer()
           this.gameInitialized = true // Allow the game to reinitialize
           this.remainingTime = 15 // Reset the timer for the next game
           this.gameStarted = true // Reset game state
-          this.io.emit('hideStartButton')
+          //this.io.emit('updatePlayers', gameService.getGameState().players)
         }
       })
 
