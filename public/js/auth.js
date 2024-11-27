@@ -73,6 +73,7 @@ class AuthManager {
     socket.on('hideStartButton', () => {
       this.startButton.style.display = 'none'
       this.restartButton.style.display = 'none'
+      eiofwhweiofhfweiho = true
       this.bgm.play() // Play background music when game starts
     })
   }
