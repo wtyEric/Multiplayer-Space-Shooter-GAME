@@ -155,6 +155,7 @@ socket.on('updatePlayers', (backEndPlayers) => {
 
 let animationId
 function animate() {
+  console.log('isGameOver = ' + isGameOver)
   if (isGameOver) return // Stop the animation if the game is over
 
   animationId = requestAnimationFrame(animate)
