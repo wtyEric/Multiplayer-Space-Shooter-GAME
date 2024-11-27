@@ -1,75 +1,75 @@
-const canvas = document.querySelector('canvas');
-const c = canvas.getContext('2d');
+const canvas = document.querySelector('canvas')
+const c = canvas.getContext('2d')
 
-const socket = io();
+const socket = io()
 
-const scoreEl = document.querySelector('#scoreEl');
+const scoreEl = document.querySelector('#scoreEl')
 
-const devicePixelRatio = 1;
-canvas.width = 1024 * devicePixelRatio;
-canvas.height = 576 * devicePixelRatio;
+const devicePixelRatio = 1
+canvas.width = 1024 * devicePixelRatio
+canvas.height = 576 * devicePixelRatio
 
-c.scale(devicePixelRatio, devicePixelRatio);
+c.scale(devicePixelRatio, devicePixelRatio)
 
-const x = canvas.width;
-const y = canvas.height;
+const x = canvas.width
+const y = canvas.height
 
-const frontEndPlayers = {};
-const frontEndProjectiles = {};
+const frontEndPlayers = {}
+const frontEndProjectiles = {}
 
 // Track speed boost state
 const gameState = {
   playerSpeedBoosts: {}
-};
+}
 
 // Use the existing timer element
-const timerEl = document.getElementById('gameTimer');
-timerEl.style.position = 'absolute';
-timerEl.style.top = '25%'; // Use percentage for top position
-timerEl.style.left = '50%';
-timerEl.style.transform = 'translateX(-50%)';
-timerEl.style.fontFamily = 'sans-serif';
-timerEl.style.fontSize = '2rem'; // Use relative units for responsive font size
-timerEl.style.color = 'white';
-timerEl.style.zIndex = '1000';
+const timerEl = document.getElementById('gameTimer')
+timerEl.style.position = 'absolute'
+timerEl.style.top = '25%' // Use percentage for top position
+timerEl.style.left = '50%'
+timerEl.style.transform = 'translateX(-50%)'
+timerEl.style.fontFamily = 'sans-serif'
+timerEl.style.fontSize = '2rem' // Use relative units for responsive font size
+timerEl.style.color = 'white'
+timerEl.style.zIndex = '1000'
 
 // Add a variable to track if the game is over
-let isGameOver = false;
-let eiofwhweiofhfweiho = false;
+let isGameOver = false
+let eiofwhweiofhfweiho = false
 // Listen for timer updates from the server
 socket.on('updateTimer', (remainingTime) => {
-  timerEl.textContent = `${remainingTime}s`;
-  if (remainingTime >= 60) {
-    eiofwhweiofhfweiho = true;
+  timerEl.textContent = `${remainingTime}s`
+  if (remainingTime >= 15) {
+    eiofwhweiofhfweiho = true
   } else {
-    eiofwhweiofhfweiho = false;
+    eiofwhweiofhfweiho = false
   }
   // Change color to red in the last 10 seconds
   if (remainingTime <= 10) {
-    timerEl.style.color = 'red';
+    timerEl.style.color = 'red'
   } else {
-    timerEl.style.color = 'white';
+    timerEl.style.color = 'white'
   }
 
   // Hide the timer when the game is over
   if (remainingTime <= 0) {
-    timerEl.textContent = 'Game Over !';
-    isGameOver = true;
-    showRestartButton();
-    document.dispatchEvent(new Event('gameOver'));
+    timerEl.textContent = 'Game Over !'
+    isGameOver = true
+    showRestartButton()
+    document.dispatchEvent(new Event('gameOver'))
   }
-});
+})
 
-const restartButton = document.getElementById('restartButton');
+const restartButton = document.getElementById('restartButton')
 function showRestartButton() {
-  restartButton.style.display = 'block'; // Show the restart button
+  restartButton.style.display = 'block' // Show the restart button
   restartButton.addEventListener('click', () => {
-    location.reload(); // Reload the page to restart the game
-  });
+    location.reload() // Reload the page to restart the game
+  })
 }
 
 // Ensure the restart button is hidden initially
-restartButton.style.display = 'none';
+restartButton.style.display = 'none'
 
 socket.on('updateProjectiles', (backEndProjectiles) => {
   for (const id in backEndProjectiles) {
@@ -154,29 +154,29 @@ socket.on('updatePlayers', (backEndPlayers) => {
 
 let animationId
 function animate() {
-  if (isGameOver) return; // Stop the animation if the game is over
+  if (isGameOver) return // Stop the animation if the game is over
 
-  animationId = requestAnimationFrame(animate);
-  c.fillStyle = 'rgba(0, 0, 0, 0.1)';
-  c.clearRect(0, 0, canvas.width, canvas.height);
+  animationId = requestAnimationFrame(animate)
+  c.fillStyle = 'rgba(0, 0, 0, 0.1)'
+  c.clearRect(0, 0, canvas.width, canvas.height)
 
   for (const id in frontEndPlayers) {
-    const frontEndPlayer = frontEndPlayers[id];
+    const frontEndPlayer = frontEndPlayers[id]
 
     // linear interpolation
     if (frontEndPlayer.target) {
       frontEndPlayers[id].x +=
-        (frontEndPlayers[id].target.x - frontEndPlayers[id].x) * 0.5;
+        (frontEndPlayers[id].target.x - frontEndPlayers[id].x) * 0.5
       frontEndPlayers[id].y +=
-        (frontEndPlayers[id].target.y - frontEndPlayers[id].y) * 0.5;
+        (frontEndPlayers[id].target.y - frontEndPlayers[id].y) * 0.5
     }
 
-    frontEndPlayer.draw();
+    frontEndPlayer.draw()
   }
 
   for (const id in frontEndProjectiles) {
-    const frontEndProjectile = frontEndProjectiles[id];
-    frontEndProjectile.draw();
+    const frontEndProjectile = frontEndProjectiles[id]
+    frontEndProjectile.draw()
   }
 }
 

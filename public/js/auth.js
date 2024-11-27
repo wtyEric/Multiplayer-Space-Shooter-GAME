@@ -12,6 +12,7 @@ class AuthManager {
       this.loginContainer = document.getElementById('loginContainer')
       this.signupContainer = document.getElementById('signupContainer')
       this.startButton = document.getElementById('startButton')
+      this.restartButton = document.getElementById('restartButton')
 
       // Debug logging
       console.log('Login container:', this.loginContainer)
@@ -71,6 +72,7 @@ class AuthManager {
     // Listen for 'hideStartButton' event from server
     socket.on('hideStartButton', () => {
       this.startButton.style.display = 'none'
+      this.restartButton.style.display = 'none'
       this.bgm.play() // Play background music when game starts
     })
   }

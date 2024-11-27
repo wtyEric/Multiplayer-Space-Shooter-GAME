@@ -16,7 +16,7 @@ class GameServer {
     })
 
     this.timer = null // Timer variable
-    this.remainingTime = 60 // Game duration in seconds
+    this.remainingTime = 15 // Game duration in seconds
     this.gameInitialized = false // Track whether the game has started
 
     this.players = {} // Store player data
@@ -102,10 +102,11 @@ class GameServer {
       socket.emit('updateTimer', this.remainingTime)
 
       socket.on('shoot', ({ x, y, angle }) => {
-        if (this.gameStarted) { // Allow shooting only if the game has started
+        if (this.gameStarted) {
+          // Allow shooting only if the game has started
           gameService.createProjectile(socket.id, x, y, angle)
         }
-      })      
+      })
 
       socket.on('initGame', ({ username, width, height }) => {
         console.log(`Game initialized for ${username}`)
@@ -113,14 +114,14 @@ class GameServer {
 
         // Initialize player data
         this.players[socket.id] = {
-        id: socket.id,
-        username: username,
-        x: Math.random() * width,
-        y: Math.random() * height,
-        score: 0,
-        color: '#' + Math.floor(Math.random() * 16777215).toString(16),
-        isRespawning: false,
-        shipType: 1 // Default ship type
+          id: socket.id,
+          username: username,
+          x: Math.random() * width,
+          y: Math.random() * height,
+          score: 0,
+          color: '#' + Math.floor(Math.random() * 16777215).toString(16),
+          isRespawning: false,
+          shipType: 1 // Default ship type
         }
 
         // Broadcast to all clients including sender
@@ -134,12 +135,13 @@ class GameServer {
           this.startGameTimer()
         }
       })
-      
+
       socket.on('restartGame', () => {
         if (!this.gameStarted) {
           this.remainingTime = 60 // Reset the timer for the next game
           this.startGameTimer()
           this.gameStarted = true
+          this.io.emit('hideStartButton')
           this.io.emit('gameRestarted')
         }
       })
@@ -187,7 +189,7 @@ class GameServer {
         // Broadcast game over to all clients
         this.io.emit('updateTimer', 0)
         this.gameInitialized = false // Allow the game to reinitialize
-        this.remainingTime = 60 // Reset the timer for the next game
+        this.remainingTime = 15 // Reset the timer for the next game
         this.gameStarted = false // Reset game state
       }
     }, 1000) // Update every second
