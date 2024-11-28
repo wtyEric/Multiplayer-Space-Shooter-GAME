@@ -193,15 +193,20 @@ class GameService {
     // Debug log current player count
     /* s */
     console.log('landmine', Object.keys(this.landmines).length)
-    //print out landmine positions
+
     console.log(
+      'Landmines:',
+      Object.keys(this.landmines).map((id) => this.landmines[id].type)
+    )
+    //print out landmine positions
+    /* console.log(
       'Landmines:',
       Object.keys(this.landmines).map((id) => this.landmines[id].x)
     )
     console.log(
       'Landmines:',
       Object.keys(this.landmines).map((id) => this.landmines[id].y)
-    )
+    ) */
     /* console.log(
       'Players:',
       Object.keys(this.players).map((id) => this.players[id].isRespawning)
@@ -223,18 +228,25 @@ class GameService {
     const x = Math.random() * 800 // Canvas width
     const y = -30 // Start above the canvas
 
+    //random generate 2 types of landmines
+    const type = Math.floor(Math.random() * 2) + 1
+
     this.landmineId++
     this.landmines[this.landmineId] = {
       x: x,
       y: y,
       id: this.landmineId,
-      active: true
+      active: true,
+      type: type
     }
   }
 
   updateLandmines() {
+    // Stop update when Game Over
+    if (this.gameOver) return
+
     const currentTime = Date.now()
-    if (currentTime - this.lastLandmineTime >= 5000) {
+    if (currentTime - this.lastLandmineTime >= 500) {
       // 5 seconds
       console.log('landmine created')
       this.createLandmine()
@@ -272,21 +284,30 @@ class GameService {
 
       const distance = Math.hypot(landmine.x - player.x, landmine.y - player.y)
 
-      if (distance < 30 && landmine.active) {
-        player.isRespawning = true
-        player.explosionFrame = 0
-        player.lastTickTime = Date.now()
+      if (distance < 40 && landmine.active) {
+        if (landmine.type === 1) {
+          player.isRespawning = true
+          player.explosionFrame = 0
+          player.lastTickTime = Date.now()
 
-        // Start 3-second countdown
-        setTimeout(() => {
-          const spawnPosition = this.getSpawnPosition()
-          player.x = spawnPosition.x
-          player.y = spawnPosition.y
-          player.isRespawning = false
-        }, 3000)
+          // Start 3-second countdown
+          setTimeout(() => {
+            const spawnPosition = this.getSpawnPosition()
+            player.x = spawnPosition.x
+            player.y = spawnPosition.y
+            player.isRespawning = false
+          }, 3000)
 
-        this.deactivateLandmine(landmineId)
-        break
+          this.deactivateLandmine(landmineId)
+          break
+        }
+        if (landmine.type === 2) {
+          player.score += 1
+          //play sound effect to frontend player
+
+          this.deactivateLandmine(landmineId)
+          break
+        }
       }
     }
   }

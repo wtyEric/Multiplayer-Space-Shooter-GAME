@@ -2,20 +2,39 @@ const canvas = document.querySelector('canvas')
 const c = canvas.getContext('2d')
 //define the game is running or not
 let gameisrunning = false
-
+let coinmusic = new Audio('../music/coin.mp3')
 const socket = io()
 
 const scoreEl = document.querySelector('#scoreEl')
 const startButton = document.getElementById('startButton')
 
 const landmineImage = new Image()
+const landmineImage2 = new Image()
 landmineImage.src = '/img/landmine.png'
+landmineImage2.src = '/img/landmine2.png' // Fixed: Added .src
+
 landmineImage.onload = () => {
-  console.log('Landmine image loaded successfully') // Debug log
+  console.log('Landmine image 1 loaded successfully') // Debug log
 }
 landmineImage.onerror = () => {
-  console.error('Failed to load landmine image') // Debug log
+  console.error('Failed to load landmine image 1') // Debug log
 }
+
+landmineImage2.onload = () => {
+  console.log('Landmine image 2 loaded successfully') // Debug log
+}
+landmineImage2.onerror = () => {
+  console.error('Failed to load landmine image 2') // Debug log
+}
+
+// Correct audio event listeners
+coinmusic.addEventListener('loadeddata', () => {
+  console.log('Coin music loaded successfully')
+})
+
+coinmusic.addEventListener('error', (e) => {
+  console.error('Error loading coin music:', e)
+})
 
 const devicePixelRatio = 1
 canvas.width = 1024 * devicePixelRatio
@@ -143,15 +162,20 @@ socket.on('updateProjectiles', (backEndProjectiles) => {
 })
 
 socket.on('updateLandmines', (backEndLandmines) => {
-  console.log('Received landmines:', backEndLandmines)
+  //console.log('Received landmines:', backEndLandmines)
 
   for (const id in backEndLandmines) {
     const backEndLandmine = backEndLandmines[id]
-    console.log('Processing landmine:', id, backEndLandmine)
+    //console.log('Processing landmine:', id, backEndLandmine)
 
     if (!frontEndLandmines[id]) {
       frontEndLandmines[id] = new Landmine(backEndLandmine.x, backEndLandmine.y)
-      frontEndLandmines[id].image = landmineImage // Set the image
+
+      if (backEndLandmine.type == 1) {
+        frontEndLandmines[id].image = landmineImage // Set the image
+      } else {
+        frontEndLandmines[id].image = landmineImage2 // Set the image
+      }
     }
 
     frontEndLandmines[id].x = backEndLandmine.x
@@ -162,6 +186,15 @@ socket.on('updateLandmines', (backEndLandmines) => {
   for (const id in frontEndLandmines) {
     if (!backEndLandmines[id]) {
       delete frontEndLandmines[id]
+    }
+  }
+  //if collision with a type 2 landmine, play coin sound
+  for (const id in backEndLandmines) {
+    if (
+      backEndLandmines[id].type == 2 &&
+      backEndLandmines[id].active == false
+    ) {
+      coinmusic.play()
     }
   }
 })
@@ -252,23 +285,16 @@ function animate() {
       frontEndProjectile.draw()
     }
 
-    //test a landmines inposition 400 400
-    /*     a = new Landmine(400, 400)
-    a.image = landmineImage
-    a.draw() */
-
-    //draw landmines
-    // In the animate function
-
-    // Debug log for dynamic landmines
-    console.log('Current frontEndLandmines:', frontEndLandmines)
-
     // Draw dynamic landmines
     for (const id in frontEndLandmines) {
       const frontEndLandmine = frontEndLandmines[id]
       if (frontEndLandmine && frontEndLandmine.isActive) {
         if (!frontEndLandmine.image) {
-          frontEndLandmine.image = landmineImage // Ensure image is set
+          if (frontEndLandmine.type == 1) {
+            frontEndLandmine.image = landmineImage // Ensure image is set
+          } else {
+            frontEndLandmine.image = landmineImage2 // Ensure image is set
+          }
         }
         frontEndLandmine.draw()
       }
@@ -321,7 +347,7 @@ setInterval(() => {
 }, 15)
 
 window.addEventListener('keydown', (event) => {
-  console.log('key down')
+  //console.log('key down')
   if (!frontEndPlayers[socket.id]) return
 
   switch (event.code) {
@@ -433,6 +459,10 @@ socket.on('updateProjectiles', (backEndProjectiles) => {
 // Make sure these listeners are added after the DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
   console.log('DOM loaded, key listeners initialized') // Debug initialization
+})
+
+socket.on('playLandmineSound', () => {
+  coinmusic.play()
 })
 
 // Update the socket.on('forceSyncGame') handler

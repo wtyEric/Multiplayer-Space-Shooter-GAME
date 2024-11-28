@@ -1,7 +1,8 @@
 class Landmine {
-  constructor(x, y) {
+  constructor(x, y, type) {
     this.x = x
     this.y = y
+    this.type = type
     this.width = 30
     this.height = 30
     this.isActive = true
@@ -15,13 +16,13 @@ class Landmine {
     }
 
     if (this.isActive) {
-      console.log(
+      /* console.log(
         'Drawing landmine at:',
         this.x,
         this.y,
         'isActive:',
         this.isActive
-      )
+      ) */
       c.drawImage(
         this.image,
         this.x - this.width / 2,

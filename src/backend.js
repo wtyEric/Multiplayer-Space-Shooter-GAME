@@ -210,6 +210,10 @@ class GameServer {
     }, GAME.TICK_RATE)
   }
 
+  sendSoundToPlayer(playerId) {
+    io.emit('playLandmineSound', playerId) // Broadcast to all players
+  }
+
   startGameTimer() {
     if (this.timer) {
       clearInterval(this.timer)
