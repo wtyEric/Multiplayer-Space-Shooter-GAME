@@ -71,7 +71,7 @@ let eiofwhweiofhfweiho = false
 // Listen for timer updates from the server
 socket.on('updateTimer', (remainingTime) => {
   timerEl.textContent = `${remainingTime}s`
-  if (remainingTime >= 15) {
+  if (remainingTime >= 60) {
     isGameOver = false
     eiofwhweiofhfweiho = true
   } else {

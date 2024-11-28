@@ -104,29 +104,28 @@ class AuthManager {
 
       if (response.ok) {
         this.loginContainer.style.display = 'none'
-        //get the game state from backend server
         socket.emit('getGameState')
-        //get back the game state from the server
-        /*gameInitialized: this.gameInitialized,
-          remainingTime: this.remainingTime,
-          gameStarted: this.gameStarted*/
         socket.on(
           'stateToFrontend',
           (gameInitialized, remainingTime, gameStarted) => {
-            //update the game state
             this.gameInitialized = gameInitialized
             this.remainingTime = remainingTime
             this.gameStarted = gameStarted
+
+            // Only show start button if game not initialized and restart button is hidden
+            // Move this check inside the callback
+            if (
+              !this.gameInitialized.gameStarted &&
+              this.restartButton.style.display !== 'block'
+            ) {
+              this.startButton.style.display = 'block'
+            }
           }
         )
-        //if the game is ongoing skip showing the start button
-        if (!this.gameStarted) {
-          this.startButton.style.display = 'block'
-        }
+
         this.logoutButton.style.display = 'block'
         this.currentUsername = username
 
-        // Emit 'initGame' to server after successful login
         socket.emit('initGame', {
           username: this.currentUsername,
           width: canvas.width,
@@ -141,6 +140,7 @@ class AuthManager {
       alert('Login failed')
     }
   }
+
   async checkSession() {
     try {
       const response = await fetch('/check-session')

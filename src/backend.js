@@ -16,7 +16,7 @@ class GameServer {
     })
 
     this.timer = null // Timer variable
-    this.remainingTime = 15 // Game duration in seconds
+    this.remainingTime = 60 // Game duration in seconds
     this.gameInitialized = false // Track whether the game has started
 
     this.players = {} // Store player data
@@ -158,7 +158,7 @@ class GameServer {
 
         // Reset game parameters
         this.gameStarted = true
-        this.remainingTime = 15
+        this.remainingTime = 60
         this.gameInitialized = true
 
         // Reset all player scores and states
@@ -231,7 +231,7 @@ class GameServer {
     }
 
     // Reset timer state
-    this.remainingTime = 15
+    this.remainingTime = 60
     this.gameStarted = true
     this.gameInitialized = true
 
