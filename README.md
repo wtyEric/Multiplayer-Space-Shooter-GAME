@@ -1,6 +1,5 @@
 # Cosmic Clash: Multiplayer Space Shooter
 
-![Cosmic Clash Logo](path/to/your/logo.png)
 
 ## 🚀 Introduction
 
@@ -49,10 +48,3 @@ npm run dev
 - Speed boost mechanics
 - Responsive design for different screen sizes
 
-## 🤝 Contributing
-
-We welcome contributions! Please see our [CONTRIBUTING.md](CONTRIBUTING.md) for details on how to submit pull requests, report bugs, or suggest new features.
-
-## 📜 License
-
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
