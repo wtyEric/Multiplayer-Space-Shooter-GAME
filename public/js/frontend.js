@@ -8,6 +8,15 @@ const socket = io()
 const scoreEl = document.querySelector('#scoreEl')
 const startButton = document.getElementById('startButton')
 
+const landmineImage = new Image()
+landmineImage.src = '/img/landmine.png'
+landmineImage.onload = () => {
+  console.log('Landmine image loaded successfully') // Debug log
+}
+landmineImage.onerror = () => {
+  console.error('Failed to load landmine image') // Debug log
+}
+
 const devicePixelRatio = 1
 canvas.width = 1024 * devicePixelRatio
 canvas.height = 576 * devicePixelRatio
@@ -19,6 +28,7 @@ const y = canvas.height
 
 const frontEndPlayers = {}
 const frontEndProjectiles = {}
+const frontEndLandmines = {}
 
 // Track speed boost state
 const gameState = {
@@ -132,11 +142,35 @@ socket.on('updateProjectiles', (backEndProjectiles) => {
   }
 })
 
-socket.on('updatePlayers', (backEndPlayers) => {
-  console.log('gameover' + isGameOver)
-  if (gameisrunning == false) {
-    startButton.style.display = 'none'
+socket.on('updateLandmines', (backEndLandmines) => {
+  console.log('Received landmines:', backEndLandmines)
+
+  for (const id in backEndLandmines) {
+    const backEndLandmine = backEndLandmines[id]
+    console.log('Processing landmine:', id, backEndLandmine)
+
+    if (!frontEndLandmines[id]) {
+      frontEndLandmines[id] = new Landmine(backEndLandmine.x, backEndLandmine.y)
+      frontEndLandmines[id].image = landmineImage // Set the image
+    }
+
+    frontEndLandmines[id].x = backEndLandmine.x
+    frontEndLandmines[id].y = backEndLandmine.y
+    frontEndLandmines[id].isActive = backEndLandmine.active // Change 'active' to 'isActive'
   }
+  // Remove landmines that no longer exist in backend
+  for (const id in frontEndLandmines) {
+    if (!backEndLandmines[id]) {
+      delete frontEndLandmines[id]
+    }
+  }
+})
+
+socket.on('updatePlayers', (backEndPlayers) => {
+  //console.log('gameover' + isGameOver)
+  /* if (gameisrunning == false) {
+    startButton.style.display = 'none'
+  } */
   for (const id in backEndPlayers) {
     const backEndPlayer = backEndPlayers[id]
 
@@ -218,9 +252,27 @@ function animate() {
       frontEndProjectile.draw()
     }
 
-    //test landmine can be drawn or not in position 400,400
-    const landmine = new Landmine(400, 400)
-    landmine.draw(c)
+    //test a landmines inposition 400 400
+    /*     a = new Landmine(400, 400)
+    a.image = landmineImage
+    a.draw() */
+
+    //draw landmines
+    // In the animate function
+
+    // Debug log for dynamic landmines
+    console.log('Current frontEndLandmines:', frontEndLandmines)
+
+    // Draw dynamic landmines
+    for (const id in frontEndLandmines) {
+      const frontEndLandmine = frontEndLandmines[id]
+      if (frontEndLandmine && frontEndLandmine.isActive) {
+        if (!frontEndLandmine.image) {
+          frontEndLandmine.image = landmineImage // Ensure image is set
+        }
+        frontEndLandmine.draw()
+      }
+    }
   }
 }
 
@@ -340,7 +392,7 @@ document.querySelector('#usernameForm').addEventListener('submit', (event) => {
 socket.on('speedBoostUpdate', ({ playerId, isActive }) => {
   gameState.playerSpeedBoosts[playerId] = isActive
 })
-
+/* 
 // Update projectile rendering
 socket.on('updateProjectiles', (backEndProjectiles) => {
   for (const id in backEndProjectiles) {
@@ -376,7 +428,7 @@ socket.on('updateProjectiles', (backEndProjectiles) => {
       }
     }
   }
-})
+}) */
 
 // Make sure these listeners are added after the DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
@@ -414,6 +466,15 @@ socket.on('forceSyncGame', (data) => {
         x: data.players[id].x,
         y: data.players[id].y
       }
+    }
+  }
+
+  // Update landmines positions
+  for (const id in data.landmines) {
+    if (frontEndLandmines[id]) {
+      frontEndLandmines[id].x = data.landmines[id].x
+      frontEndLandmines[id].y = data.landmines[id].y
+      frontEndLandmines[id].isActive = data.landmines[id].isActive
     }
   }
 

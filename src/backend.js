@@ -138,32 +138,32 @@ class GameServer {
 
       socket.on('restartGame', () => {
         this.resetCount++
-        
+
         // Reset server game state
         this.gameState = {
           isRunning: true,
           isOver: false,
           hasStarted: true
         }
-        
+
         // Reset game parameters
         this.gameStarted = true
         this.remainingTime = 15
         this.gameInitialized = true
-        
+
         // Reset all player scores and states
         for (const playerId in gameService.players) {
           gameService.players[playerId].score = 0
           gameService.players[playerId].isRespawning = false
         }
-        
+
         // Clear all projectiles and speed boosts
         gameService.projectiles = {}
         gameService.playerSpeedBoosts = {}
-        
+
         // Force hide start button for all clients
         this.io.emit('hideStartButton')
-        
+
         // Force sync all clients
         this.io.emit('forceSyncGame', {
           resetCount: this.resetCount,
@@ -171,7 +171,7 @@ class GameServer {
           players: gameService.getGameState().players,
           projectiles: gameService.projectiles
         })
-        
+
         // Start new game timer
         this.startGameTimer()
       })
@@ -202,9 +202,11 @@ class GameServer {
   setupGameLoop() {
     setInterval(() => {
       gameService.updateProjectiles()
+      gameService.updateLandmines()
       const gameState = gameService.getGameState()
       this.io.emit('updateProjectiles', gameState.projectiles)
       this.io.emit('updatePlayers', gameState.players)
+      this.io.emit('updateLandmines', gameState.landmines)
     }, GAME.TICK_RATE)
   }
 
@@ -212,12 +214,12 @@ class GameServer {
     if (this.timer) {
       clearInterval(this.timer)
     }
-    
+
     // Reset timer state
     this.remainingTime = 15
     this.gameStarted = true
     this.gameInitialized = true
-    
+
     this.timer = setInterval(() => {
       if (this.remainingTime > 0) {
         this.remainingTime -= 1

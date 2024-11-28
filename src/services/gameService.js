@@ -4,8 +4,13 @@ class GameService {
   constructor() {
     this.players = {}
     this.projectiles = {}
+    this.landmines = {}
     this.projectileId = 0
     this.playerSpeedBoosts = {}
+    this.landmines = {}
+    this.landmineId = 0
+    this.lastLandmineTime = Date.now()
+    this.landmineSpeed = 2 // Speed at which landmines move down
   }
 
   initializePlayer(socketId, username, width, height, shipType) {
@@ -186,23 +191,109 @@ class GameService {
 
   getGameState() {
     // Debug log current player count
-    console.log(`Current players: ${Object.keys(this.players).length}`)
+    /* s */
+    console.log('landmine', Object.keys(this.landmines).length)
+    //print out landmine positions
     console.log(
-      'Players:',
-      Object.keys(this.players).map((id) => this.players[id].username)
+      'Landmines:',
+      Object.keys(this.landmines).map((id) => this.landmines[id].x)
     )
     console.log(
+      'Landmines:',
+      Object.keys(this.landmines).map((id) => this.landmines[id].y)
+    )
+    /* console.log(
       'Players:',
       Object.keys(this.players).map((id) => this.players[id].isRespawning)
-    )
-    console.log(
+    ) */
+    /* console.log(
       'Players:',
       Object.keys(this.players).map((id) => this.players[id].shipType)
-    )
+    ) */
 
     return {
       players: this.players,
-      projectiles: this.projectiles
+      projectiles: this.projectiles,
+      landmines: this.landmines
+    }
+  }
+
+  createLandmine() {
+    // Create landmine at random x position but start from top
+    const x = Math.random() * 800 // Canvas width
+    const y = -30 // Start above the canvas
+
+    this.landmineId++
+    this.landmines[this.landmineId] = {
+      x: x,
+      y: y,
+      id: this.landmineId,
+      active: true
+    }
+  }
+
+  updateLandmines() {
+    const currentTime = Date.now()
+    if (currentTime - this.lastLandmineTime >= 5000) {
+      // 5 seconds
+      console.log('landmine created')
+      this.createLandmine()
+      this.lastLandmineTime = currentTime
+    }
+
+    // Update positions and check boundaries
+    Object.keys(this.landmines).forEach((id) => {
+      const landmine = this.landmines[id]
+
+      // Move landmine down
+      landmine.y += this.landmineSpeed
+
+      // Check if landmine is out of bounds
+      if (
+        landmine.y >= GAME.CANVAS_HEIGHT + 30 || // 30 pixels buffer
+        !landmine.active
+      ) {
+        delete this.landmines[id]
+      }
+      //check Collision with players
+      this.checkLandmindCollisions(id)
+    })
+  }
+
+  checkLandmindCollisions(landmineId) {
+    const landmine = this.landmines[landmineId]
+    if (!landmine) return
+
+    for (const playerId in this.players) {
+      const player = this.players[playerId]
+
+      // Skip collision check if player is respawning
+      if (player.isRespawning) continue
+
+      const distance = Math.hypot(landmine.x - player.x, landmine.y - player.y)
+
+      if (distance < 30 && landmine.active) {
+        player.isRespawning = true
+        player.explosionFrame = 0
+        player.lastTickTime = Date.now()
+
+        // Start 3-second countdown
+        setTimeout(() => {
+          const spawnPosition = this.getSpawnPosition()
+          player.x = spawnPosition.x
+          player.y = spawnPosition.y
+          player.isRespawning = false
+        }, 3000)
+
+        this.deactivateLandmine(landmineId)
+        break
+      }
+    }
+  }
+
+  deactivateLandmine(id) {
+    if (this.landmines[id]) {
+      this.landmines[id].active = false
     }
   }
 

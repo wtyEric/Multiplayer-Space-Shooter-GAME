@@ -2,27 +2,33 @@ class Landmine {
   constructor(x, y) {
     this.x = x
     this.y = y
-    this.width = 30 // Adjust this value to make the landmine smaller
-    this.height = 30 // Adjust this value to make the landmine smaller
-    this.image = new Image()
-    this.image.src = '/img/landmine.png'
+    this.width = 30
+    this.height = 30
     this.isActive = true
+    this.image = null
   }
 
-  draw(ctx) {
+  draw() {
+    if (!this.image) {
+      console.error('No image assigned to landmine')
+      return
+    }
+
     if (this.isActive) {
-      ctx.drawImage(
+      console.log(
+        'Drawing landmine at:',
+        this.x,
+        this.y,
+        'isActive:',
+        this.isActive
+      )
+      c.drawImage(
         this.image,
-        this.x - this.width / 2, // Center the image on x coordinate
-        this.y - this.height / 2, // Center the image on y coordinate
+        this.x - this.width / 2,
+        this.y - this.height / 2,
         this.width,
         this.height
       )
     }
-  }
-
-  explode() {
-    this.isActive = false
-    // Add explosion logic here
   }
 }
