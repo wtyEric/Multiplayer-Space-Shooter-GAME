@@ -137,7 +137,16 @@ class GameServer {
       })
 
       socket.on('restartGame', () => {
-        // Reset game state
+        this.resetCount++
+        
+        // Reset server game state
+        this.gameState = {
+          isRunning: true,
+          isOver: false,
+          hasStarted: true
+        }
+        
+        // Reset game parameters
         this.gameStarted = true
         this.remainingTime = 15
         this.gameInitialized = true
@@ -148,21 +157,28 @@ class GameServer {
           gameService.players[playerId].isRespawning = false
         }
         
-        // Clear all projectiles
+        // Clear all projectiles and speed boosts
         gameService.projectiles = {}
-        
-        // Reset speed boosts
         gameService.playerSpeedBoosts = {}
         
-        // Broadcast game restart to all clients
-        this.io.emit('gameRestarted')
+        // Force hide start button for all clients
+        this.io.emit('hideStartButton')
         
-        // Start the game timer immediately
+        // Force sync all clients
+        this.io.emit('forceSyncGame', {
+          resetCount: this.resetCount,
+          gameState: this.gameState,
+          players: gameService.getGameState().players,
+          projectiles: gameService.projectiles
+        })
+        
+        // Start new game timer
         this.startGameTimer()
-        
-        // Update all clients with reset game state
-        this.io.emit('updatePlayers', gameService.getGameState().players)
-        this.io.emit('updateProjectiles', gameService.projectiles)
+      })
+
+      socket.on('hideStartButton', () => {
+        // Broadcast to all clients to hide start button
+        this.io.emit('hideStartButton')
       })
 
       socket.on('keydown', ({ keycode, sequenceNumber }) => {

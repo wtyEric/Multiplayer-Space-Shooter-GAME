@@ -378,3 +378,64 @@ socket.on('updateProjectiles', (backEndProjectiles) => {
 document.addEventListener('DOMContentLoaded', () => {
   console.log('DOM loaded, key listeners initialized') // Debug initialization
 })
+
+// Update the socket.on('forceSyncGame') handler
+socket.on('forceSyncGame', (data) => {
+  // Update local state
+  currentResetCount = data.resetCount
+  gameState = data.gameState
+  
+  // Reset game visuals
+  gameisrunning = gameState.isRunning
+  isGameOver = gameState.isOver
+  eiofwhweiofhfweiho = gameState.hasStarted
+  
+  // Force hide both buttons
+  startButton.style.display = 'none'
+  restartButton.style.display = 'none'
+  
+  // Clear and reset projectiles
+  frontEndProjectiles = {}
+  
+  // Reset animation
+  if (animationId) {
+    cancelAnimationFrame(animationId)
+  }
+  animate()
+  
+  // Update player positions
+  for (const id in data.players) {
+    if (frontEndPlayers[id]) {
+      frontEndPlayers[id].target = {
+        x: data.players[id].x,
+        y: data.players[id].y
+      }
+    }
+  }
+
+  // Emit hideStartButton to ensure all clients hide it
+  socket.emit('hideStartButton')
+})
+
+function updateGameVisuals() {
+  gameisrunning = gameState.isRunning
+  isGameOver = gameState.isOver
+  eiofwhweiofhfweiho = gameState.hasStarted
+  
+  // Always hide start button after game has started
+  startButton.style.display = 'none'
+  restartButton.style.display = gameState.isOver ? 'block' : 'none'
+  
+  if (!gameState.isRunning && animationId) {
+    cancelAnimationFrame(animationId)
+  } else if (gameState.isRunning && !animationId) {
+    animate()
+  }
+}
+
+// Update the showRestartButton function
+function showRestartButton() {
+  gameisrunning = false
+  restartButton.style.display = 'block'
+  startButton.style.display = 'none' // Ensure start button stays hidden
+}
