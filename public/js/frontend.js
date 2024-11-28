@@ -81,10 +81,11 @@ restartButton.style.display = 'none'
 
 socket.on('gameRestarted', () => {
   gameisrunning = true
+  isGameOver = false
+  eiofwhweiofhfweiho = true
   startButton.style.display = 'none'
+  restartButton.style.display = 'none'
   socket.emit('hideStartButton')
-  startButton.style.display = 'none'
-  location.reload()
 })
 
 socket.on('updateProjectiles', (backEndProjectiles) => {

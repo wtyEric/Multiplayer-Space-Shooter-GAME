@@ -137,15 +137,24 @@ class GameServer {
       })
 
       socket.on('restartGame', () => {
-        this.io.emit('gameRestarted')
-        if (!this.gameStarted) {
-          this.remainingTime = 15 // Reset the timer for the next game
-          this.startGameTimer()
-          this.gameInitialized = true // Allow the game to reinitialize
-          this.remainingTime = 15 // Reset the timer for the next game
-          this.gameStarted = true // Reset game state
-          //this.io.emit('updatePlayers', gameService.getGameState().players)
+        // Reset game state
+        this.gameStarted = true
+        this.remainingTime = 15
+        this.gameInitialized = true
+        
+        // Reset all player scores
+        for (const playerId in gameService.players) {
+          gameService.players[playerId].score = 0
         }
+        
+        // Broadcast game restart to all clients
+        this.io.emit('gameRestarted')
+        
+        // Start the game timer immediately
+        this.startGameTimer()
+        
+        // Update all clients with reset game state
+        this.io.emit('updatePlayers', gameService.getGameState().players)
       })
 
       socket.on('keydown', ({ keycode, sequenceNumber }) => {

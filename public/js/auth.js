@@ -83,6 +83,11 @@ class AuthManager {
 
     // Add logout button listener
     this.logoutButton.addEventListener('click', () => this.logout())
+
+    // Update restart button listener
+    this.restartButton.addEventListener('click', () => {
+      socket.emit('restartGame')
+    })
   }
 
   async handleLogin(e) {
