@@ -85,7 +85,25 @@ socket.on('gameRestarted', () => {
   eiofwhweiofhfweiho = true
   startButton.style.display = 'none'
   restartButton.style.display = 'none'
-  socket.emit('hideStartButton')
+  
+  // Reset animation
+  if (animationId) {
+    cancelAnimationFrame(animationId)
+  }
+  animate() // Restart animation loop
+  
+  // Reset game state
+  for (const id in frontEndProjectiles) {
+    delete frontEndProjectiles[id]
+  }
+  
+  // Reset player positions
+  for (const id in frontEndPlayers) {
+    if (frontEndPlayers[id].target) {
+      frontEndPlayers[id].x = frontEndPlayers[id].target.x
+      frontEndPlayers[id].y = frontEndPlayers[id].target.y
+    }
+  }
 })
 
 socket.on('updateProjectiles', (backEndProjectiles) => {
@@ -175,29 +193,30 @@ socket.on('updatePlayers', (backEndPlayers) => {
 
 let animationId
 function animate() {
-  if (isGameOver) return // Stop the animation if the game is over
-
   animationId = requestAnimationFrame(animate)
-  c.fillStyle = 'rgba(0, 0, 0, 0.1)'
-  c.clearRect(0, 0, canvas.width, canvas.height)
+  // Only run game logic if the game is not over
+  if (!isGameOver) {
+    c.fillStyle = 'rgba(0, 0, 0, 0.1)'
+    c.clearRect(0, 0, canvas.width, canvas.height)
 
-  for (const id in frontEndPlayers) {
-    const frontEndPlayer = frontEndPlayers[id]
+    for (const id in frontEndPlayers) {
+      const frontEndPlayer = frontEndPlayers[id]
 
-    // linear interpolation
-    if (frontEndPlayer.target) {
-      frontEndPlayers[id].x +=
-        (frontEndPlayers[id].target.x - frontEndPlayers[id].x) * 0.5
-      frontEndPlayers[id].y +=
-        (frontEndPlayers[id].target.y - frontEndPlayers[id].y) * 0.5
+      // linear interpolation
+      if (frontEndPlayer.target) {
+        frontEndPlayers[id].x +=
+          (frontEndPlayers[id].target.x - frontEndPlayers[id].x) * 0.5
+        frontEndPlayers[id].y +=
+          (frontEndPlayers[id].target.y - frontEndPlayers[id].y) * 0.5
+      }
+
+      frontEndPlayer.draw()
     }
 
-    frontEndPlayer.draw()
-  }
-
-  for (const id in frontEndProjectiles) {
-    const frontEndProjectile = frontEndProjectiles[id]
-    frontEndProjectile.draw()
+    for (const id in frontEndProjectiles) {
+      const frontEndProjectile = frontEndProjectiles[id]
+      frontEndProjectile.draw()
+    }
   }
 }
 

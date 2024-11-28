@@ -142,10 +142,17 @@ class GameServer {
         this.remainingTime = 15
         this.gameInitialized = true
         
-        // Reset all player scores
+        // Reset all player scores and states
         for (const playerId in gameService.players) {
           gameService.players[playerId].score = 0
+          gameService.players[playerId].isRespawning = false
         }
+        
+        // Clear all projectiles
+        gameService.projectiles = {}
+        
+        // Reset speed boosts
+        gameService.playerSpeedBoosts = {}
         
         // Broadcast game restart to all clients
         this.io.emit('gameRestarted')
@@ -155,6 +162,7 @@ class GameServer {
         
         // Update all clients with reset game state
         this.io.emit('updatePlayers', gameService.getGameState().players)
+        this.io.emit('updateProjectiles', gameService.projectiles)
       })
 
       socket.on('keydown', ({ keycode, sequenceNumber }) => {
@@ -188,22 +196,24 @@ class GameServer {
     if (this.timer) {
       clearInterval(this.timer)
     }
+    
+    // Reset timer state
+    this.remainingTime = 15
+    this.gameStarted = true
+    this.gameInitialized = true
+    
     this.timer = setInterval(() => {
       if (this.remainingTime > 0) {
         this.remainingTime -= 1
-        this.io.emit('updateTimer', this.remainingTime) // Broadcast remaining time
+        this.io.emit('updateTimer', this.remainingTime)
       } else {
-        clearInterval(this.timer) // Stop the timer when it reaches 0
+        clearInterval(this.timer)
         this.timer = null
-        console.log('Game over!')
-
-        // Broadcast game over to all clients
+        this.gameStarted = false
+        this.gameInitialized = false
         this.io.emit('updateTimer', 0)
-        this.gameInitialized = false // Allow the game to reinitialize
-        this.remainingTime = 15 // Reset the timer for the next game
-        this.gameStarted = false // Reset game state
       }
-    }, 1000) // Update every second
+    }, 1000)
   }
 
   start(port) {
