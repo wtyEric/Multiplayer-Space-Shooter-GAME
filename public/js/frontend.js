@@ -85,18 +85,18 @@ socket.on('gameRestarted', () => {
   eiofwhweiofhfweiho = true
   startButton.style.display = 'none'
   restartButton.style.display = 'none'
-  
+
   // Reset animation
   if (animationId) {
     cancelAnimationFrame(animationId)
   }
   animate() // Restart animation loop
-  
+
   // Reset game state
   for (const id in frontEndProjectiles) {
     delete frontEndProjectiles[id]
   }
-  
+
   // Reset player positions
   for (const id in frontEndPlayers) {
     if (frontEndPlayers[id].target) {
@@ -217,6 +217,10 @@ function animate() {
       const frontEndProjectile = frontEndProjectiles[id]
       frontEndProjectile.draw()
     }
+
+    //test landmine can be drawn or not in position 400,400
+    const landmine = new Landmine(400, 400)
+    landmine.draw(c)
   }
 }
 
@@ -384,25 +388,25 @@ socket.on('forceSyncGame', (data) => {
   // Update local state
   currentResetCount = data.resetCount
   gameState = data.gameState
-  
+
   // Reset game visuals
   gameisrunning = gameState.isRunning
   isGameOver = gameState.isOver
   eiofwhweiofhfweiho = gameState.hasStarted
-  
+
   // Force hide both buttons
   startButton.style.display = 'none'
   restartButton.style.display = 'none'
-  
+
   // Clear and reset projectiles
   frontEndProjectiles = {}
-  
+
   // Reset animation
   if (animationId) {
     cancelAnimationFrame(animationId)
   }
   animate()
-  
+
   // Update player positions
   for (const id in data.players) {
     if (frontEndPlayers[id]) {
@@ -421,11 +425,11 @@ function updateGameVisuals() {
   gameisrunning = gameState.isRunning
   isGameOver = gameState.isOver
   eiofwhweiofhfweiho = gameState.hasStarted
-  
+
   // Always hide start button after game has started
   startButton.style.display = 'none'
   restartButton.style.display = gameState.isOver ? 'block' : 'none'
-  
+
   if (!gameState.isRunning && animationId) {
     cancelAnimationFrame(animationId)
   } else if (gameState.isRunning && !animationId) {
