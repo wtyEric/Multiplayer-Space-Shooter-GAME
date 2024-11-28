@@ -13,6 +13,7 @@ class AuthManager {
       this.signupContainer = document.getElementById('signupContainer')
       this.startButton = document.getElementById('startButton')
       this.restartButton = document.getElementById('restartButton')
+      this.logoutButton = document.getElementById('logoutButton')
 
       // Debug logging
       console.log('Login container:', this.loginContainer)
@@ -79,6 +80,9 @@ class AuthManager {
       this.startButton = document.getElementById('startButton')
       this.startButton.style.display = 'none'
     })
+
+    // Add logout button listener
+    this.logoutButton.addEventListener('click', () => this.logout())
   }
 
   async handleLogin(e) {
@@ -96,6 +100,7 @@ class AuthManager {
       if (response.ok) {
         this.loginContainer.style.display = 'none'
         this.startButton.style.display = 'block'
+        this.logoutButton.style.display = 'block'
         this.currentUsername = username
 
         // Emit 'initGame' to server after successful login
@@ -122,6 +127,7 @@ class AuthManager {
       if (data.success) {
         this.loginContainer.style.display = 'none'
         this.startButton.style.display = 'block'
+        this.logoutButton.style.display = 'block'
         this.currentUsername = data.username
 
         // Emit 'initGame' to server if session is valid
@@ -169,8 +175,23 @@ class AuthManager {
   }
 
   logout() {
-    document.cookie = 'sessionToken=; expires=Thu, 01 Jan 1970 00:00:00 GMT'
-    document.cookie = 'username=; expires=Thu, 01 Jan 1970 00:00:00 GMT'
+    // Clear cookies
+    document.cookie = 'sessionToken=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/'
+    document.cookie = 'username=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/'
+    
+    // Hide logout button and start button
+    this.logoutButton.style.display = 'none'
+    this.startButton.style.display = 'none'
+    
+    // Show login container
+    this.loginContainer.style.display = 'flex'
+    
+    // Disconnect socket if needed
+    if (socket) {
+      socket.disconnect()
+    }
+    
+    // Reload the page to reset the game state
     window.location.reload()
   }
 }

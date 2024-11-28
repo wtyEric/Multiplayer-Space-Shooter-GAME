@@ -21,7 +21,7 @@
   },
   "test": {
     "password": "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08",
-    "sessionToken": "d9938e6c5fb419fb1663e3eca9709649a9ab1ec442ab418d32e317c13cfa75e6"
+    "sessionToken": "fe58ead9dd87d31bedfa62ce21a9f13fc4e2af8e73af4bb01fc03eafd237d8e3"
   },
   "": {
     "password": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -29,7 +29,7 @@
   },
   "abc": {
     "password": "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3",
-    "sessionToken": "0633da4fa6fcf01ccc787dbae6768cad1059244e394c861b9905dca5250de255"
+    "sessionToken": "31e68352946194b0440dbb18ad02e7cde3be40c6c3fa211b880d67943dd5754c"
   },
   "phone": {
     "password": "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3",
