@@ -136,6 +136,16 @@ class GameServer {
         }
       })
 
+      //recevie the request from the client to get the game state
+      socket.on('getGameState', () => {
+        //send the game state to the client
+        socket.emit('stateToFrontend', {
+          gameInitialized: this.gameInitialized,
+          remainingTime: this.remainingTime,
+          gameStarted: this.gameStarted
+        })
+      })
+
       socket.on('restartGame', () => {
         this.resetCount++
 

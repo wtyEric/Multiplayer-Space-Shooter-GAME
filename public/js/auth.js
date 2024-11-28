@@ -104,7 +104,25 @@ class AuthManager {
 
       if (response.ok) {
         this.loginContainer.style.display = 'none'
-        this.startButton.style.display = 'block'
+        //get the game state from backend server
+        socket.emit('getGameState')
+        //get back the game state from the server
+        /*gameInitialized: this.gameInitialized,
+          remainingTime: this.remainingTime,
+          gameStarted: this.gameStarted*/
+        socket.on(
+          'stateToFrontend',
+          (gameInitialized, remainingTime, gameStarted) => {
+            //update the game state
+            this.gameInitialized = gameInitialized
+            this.remainingTime = remainingTime
+            this.gameStarted = gameStarted
+          }
+        )
+        //if the game is ongoing skip showing the start button
+        if (!this.gameStarted) {
+          this.startButton.style.display = 'block'
+        }
         this.logoutButton.style.display = 'block'
         this.currentUsername = username
 
@@ -123,7 +141,6 @@ class AuthManager {
       alert('Login failed')
     }
   }
-
   async checkSession() {
     try {
       const response = await fetch('/check-session')
@@ -131,11 +148,31 @@ class AuthManager {
 
       if (data.success) {
         this.loginContainer.style.display = 'none'
-        this.startButton.style.display = 'block'
+
+        socket.emit('getGameState')
+        socket.on(
+          'stateToFrontend',
+          (gameInitialized, remainingTime, gameStarted) => {
+            this.gameInitialized = gameInitialized
+            this.remainingTime = remainingTime
+            this.gameStarted = gameStarted
+            console.log('gameStarted', this.gameStarted)
+            console.log('gameInitialized', this.gameInitialized)
+            console.log('remainingTime', this.remainingTime)
+
+            // Move this check inside the callback
+            if (
+              !this.gameInitialized.gameStarted &&
+              this.restartButton.style.display !== 'block'
+            ) {
+              this.startButton.style.display = 'block'
+            }
+          }
+        )
+
         this.logoutButton.style.display = 'block'
         this.currentUsername = data.username
 
-        // Emit 'initGame' to server if session is valid
         socket.emit('initGame', {
           username: this.currentUsername,
           width: canvas.width,
@@ -181,21 +218,22 @@ class AuthManager {
 
   logout() {
     // Clear cookies
-    document.cookie = 'sessionToken=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/'
+    document.cookie =
+      'sessionToken=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/'
     document.cookie = 'username=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/'
-    
+
     // Hide logout button and start button
     this.logoutButton.style.display = 'none'
     this.startButton.style.display = 'none'
-    
+
     // Show login container
     this.loginContainer.style.display = 'flex'
-    
+
     // Disconnect socket if needed
     if (socket) {
       socket.disconnect()
     }
-    
+
     // Reload the page to reset the game state
     window.location.reload()
   }
