@@ -201,6 +201,7 @@ class GameServer {
 
   setupGameLoop() {
     setInterval(() => {
+      if (!this.gameStarted) return
       gameService.updateProjectiles()
       gameService.updateLandmines()
       const gameState = gameService.getGameState()

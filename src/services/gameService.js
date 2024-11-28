@@ -244,9 +244,10 @@ class GameService {
   updateLandmines() {
     // Stop update when Game Over
     if (this.gameOver) return
+    console.log(this.gameOver)
 
     const currentTime = Date.now()
-    if (currentTime - this.lastLandmineTime >= 500) {
+    if (currentTime - this.lastLandmineTime >= 4000) {
       // 5 seconds
       console.log('landmine created')
       this.createLandmine()
